@@ -36,9 +36,9 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
 
     public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter,
+            @Lazy JwtAuthenticationFilter jwtAuthenticationFilter,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-            @Lazy UserDetailsService userDetailsService) {
+            UserDetailsService userDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.userDetailsService = userDetailsService;
