@@ -58,6 +58,7 @@ class FinancialServiceTest {
 
     @Test
     void testCreateTransaction() {
+        transaction.setAccount(account);
         when(chartOfAccountsRepository.findById(any(UUID.class))).thenReturn(Optional.of(account));
         when(transactionRepository.save(any(FinancialTransaction.class))).thenReturn(transaction);
 
