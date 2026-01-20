@@ -67,7 +67,7 @@ services:
       RABBITMQ_PORT: 5672
       RABBITMQ_USER: guest
       RABBITMQ_PASSWORD: guest
-      JWT_SECRET: your-256-bit-secret-key-change-in-production-minimum-32-characters
+      JWT_SECRET: dGhpc2lzYXNlY3VyZWp3dHNlY3JldGtleWZvcnNhcGVycHN5c3RlbWRvbm90dXNlaW5wcm9kdWN0aW9u
     ports:
       - "8080:8080"
     depends_on:

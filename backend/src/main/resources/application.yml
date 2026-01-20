@@ -71,7 +71,7 @@ logging:
     max-history: 30
 
 jwt:
-  secret: ${JWT_SECRET:your-256-bit-secret-key-change-in-production-minimum-32-characters}
+  secret: ${JWT_SECRET:dGhpc2lzYXNlY3VyZWp3dHNlY3JldGtleWZvcnNhcGVycHN5c3RlbWRvbm90dXNlaW5wcm9kdWN0aW9u}
   expiration: 86400000 # 24 horas
 
 app:
