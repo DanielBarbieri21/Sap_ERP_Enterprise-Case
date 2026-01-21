@@ -16,4 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     
     @Query("SELECT p FROM Product p WHERE p.tenantId = :tenantId AND p.currentStock < p.minStock")
     List<Product> findLowStock(@Param("tenantId") UUID tenantId);
+
+    @Query("SELECT p FROM Product p WHERE p.tenantId = :tenantId AND p.active = true ORDER BY p.name")
+    List<Product> findAllActiveByTenant(@Param("tenantId") UUID tenantId);
 }

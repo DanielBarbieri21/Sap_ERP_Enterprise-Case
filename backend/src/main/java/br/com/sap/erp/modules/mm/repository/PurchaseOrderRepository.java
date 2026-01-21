@@ -1,6 +1,7 @@
 package br.com.sap.erp.modules.mm.repository;
 
 import br.com.sap.erp.modules.mm.domain.entity.PurchaseOrder;
+import br.com.sap.erp.modules.mm.dto.SupplierSummary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +29,9 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, UU
         @Param("tenantId") UUID tenantId,
         @Param("status") PurchaseOrder.OrderStatus status
     );
+
+    @Query("SELECT new br.com.sap.erp.modules.mm.dto.SupplierSummary(po.supplierId, po.supplierName) " +
+           "FROM PurchaseOrder po WHERE po.tenantId = :tenantId AND po.supplierId IS NOT NULL AND po.supplierName IS NOT NULL " +
+           "GROUP BY po.supplierId, po.supplierName ORDER BY po.supplierName")
+    List<SupplierSummary> findDistinctSuppliers(@Param("tenantId") UUID tenantId);
 }

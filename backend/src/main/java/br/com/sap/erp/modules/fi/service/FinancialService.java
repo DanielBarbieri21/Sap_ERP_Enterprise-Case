@@ -95,4 +95,13 @@ public class FinancialService {
     public BigDecimal getCashFlow(LocalDate startDate, LocalDate endDate) {
         return getTotalRevenue(startDate, endDate).subtract(getTotalExpenses(startDate, endDate));
     }
+
+    @Transactional(readOnly = true)
+    public List<ChartOfAccounts> getActiveAccounts() {
+        UUID tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            return List.of();
+        }
+        return chartOfAccountsRepository.findAllActiveByTenant(tenantId);
+    }
 }

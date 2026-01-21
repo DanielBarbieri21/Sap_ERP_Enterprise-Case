@@ -56,5 +56,13 @@ public class DevDataInitializer {
                     .email(adminEmail)
                     .password("admin123")
                     .company(company)
-                    .ice.create(admin, companyId);
+                    .build();
+
+            userService.create(admin, companyId);
+
+            // Limpa o contexto do tenant
+            TenantContext.clear();
+        }
+    }
+
 }

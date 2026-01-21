@@ -42,4 +42,9 @@ public class WarehouseController {
     public ResponseEntity<List<Product>> getLowStockProducts() {
         return ResponseEntity.ok(warehouseService.getLowStockProducts());
     }
+
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> listProducts() {
+        return ResponseEntity.ok(warehouseService.getAllActiveProducts());
+    }
 }

@@ -74,4 +74,13 @@ public class WarehouseService {
         }
         return productRepository.findLowStock(tenantId);
     }
+
+    @Transactional(readOnly = true)
+    public List<Product> getAllActiveProducts() {
+        UUID tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            return List.of();
+        }
+        return productRepository.findAllActiveByTenant(tenantId);
+    }
 }

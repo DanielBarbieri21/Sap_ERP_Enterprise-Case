@@ -3,6 +3,7 @@ package br.com.sap.erp.modules.mm.controller;
 import br.com.sap.erp.modules.mm.domain.entity.GoodsReceipt;
 import br.com.sap.erp.modules.mm.domain.entity.PurchaseOrder;
 import br.com.sap.erp.modules.mm.domain.entity.PurchaseRequisition;
+import br.com.sap.erp.modules.mm.dto.SupplierSummary;
 import br.com.sap.erp.modules.mm.service.PurchaseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,10 @@ public class PurchaseController {
             return ResponseEntity.ok(purchaseService.getOrdersByDateRange(startDate, endDate));
         }
         return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/suppliers")
+    public ResponseEntity<List<SupplierSummary>> listSuppliers() {
+        return ResponseEntity.ok(purchaseService.getSuppliers());
     }
 }

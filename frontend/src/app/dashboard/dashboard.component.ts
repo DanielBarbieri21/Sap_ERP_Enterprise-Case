@@ -285,7 +285,6 @@ export class DashboardComponent implements OnInit {
   }
 
   navigateTo(path: string) {
-    // TODO: Implementar navegação para módulos
-    console.log('Navegar para:', path);
+    this.router.navigate([path]);
   }
 }

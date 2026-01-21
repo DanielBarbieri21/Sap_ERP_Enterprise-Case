@@ -4,6 +4,7 @@ import br.com.sap.erp.core.domain.TenantContext;
 import br.com.sap.erp.modules.mm.domain.entity.GoodsReceipt;
 import br.com.sap.erp.modules.mm.domain.entity.PurchaseOrder;
 import br.com.sap.erp.modules.mm.domain.entity.PurchaseRequisition;
+import br.com.sap.erp.modules.mm.dto.SupplierSummary;
 import br.com.sap.erp.modules.mm.repository.GoodsReceiptRepository;
 import br.com.sap.erp.modules.mm.repository.PurchaseOrderRepository;
 import br.com.sap.erp.modules.mm.repository.PurchaseRequisitionRepository;
@@ -69,5 +70,14 @@ public class PurchaseService {
             return List.of();
         }
         return orderRepository.findByDateRange(tenantId, startDate, endDate);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SupplierSummary> getSuppliers() {
+        UUID tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            return List.of();
+        }
+        return orderRepository.findDistinctSuppliers(tenantId);
     }
 }
