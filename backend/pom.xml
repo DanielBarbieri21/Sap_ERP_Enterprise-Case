@@ -102,6 +102,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Jasper Reports - DEPRECATED due to CVE-2025-10492 -->
+        <!-- <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.20.6</version>
+        </dependency> -->
+
         <!-- MapStruct -->
         <dependency>
             <groupId>org.mapstruct</groupId>

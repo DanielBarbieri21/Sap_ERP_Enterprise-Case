@@ -172,8 +172,58 @@ npm test
 7. Mensageria (Kafka/RabbitMQ)
 8. Deploy em Kubernetes
 
+## ☸️ Kubernetes
+
+Manifests iniciais adicionados em [k8s/](k8s/):
+- [k8s/namespace.yaml](k8s/namespace.yaml)
+- [k8s/backend-deployment.yaml](k8s/backend-deployment.yaml)
+- [k8s/frontend-deployment.yaml](k8s/frontend-deployment.yaml)
+- [k8s/postgres-statefulset.yaml](k8s/postgres-statefulset.yaml)
+- [k8s/redis-deployment.yaml](k8s/redis-deployment.yaml)
+- [k8s/rabbitmq-deployment.yaml](k8s/rabbitmq-deployment.yaml)
+- [k8s/secrets.yaml](k8s/secrets.yaml)
+
+Passos rápidos:
+
+```bash
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/secrets.yaml
+kubectl apply -f k8s/postgres-statefulset.yaml
+kubectl apply -f k8s/redis-deployment.yaml
+kubectl apply -f k8s/rabbitmq-deployment.yaml
+kubectl apply -f k8s/backend-deployment.yaml
+kubectl apply -f k8s/frontend-deployment.yaml
+```
+
+Atenção: atualize a imagem do backend/frontend nos manifests (`REPLACE_WITH_REGISTRY/...`).
+
+## 🔎 Auditoria
+
+Aspecto de auditoria criado em [backend/src/main/java/br/com/sap/erp/core/audit/AuditAspect.java](backend/src/main/java/br/com/sap/erp/core/audit/AuditAspect.java).
+
+Anote métodos com `@Auditable("ACTION")` para registrar auditoria automaticamente.
+
+## 🧪 Testes
+
+Teste unitário do JWT em [backend/src/test/java/br/com/sap/erp/core/service/JwtServiceTest.java](backend/src/test/java/br/com/sap/erp/core/service/JwtServiceTest.java).
+
+
 ## 🤝 Contribuindo
 
 Este é um projeto educacional/profissional. Sinta-se livre para adaptar conforme suas necessidades.
+
+
+   ---
+
+🛠️ **Software desenvolvido por Daniel Barbieri**  
+Engenheiro de Software | Full Stack Developer  
+
+Código construído com foco em eficiência, organização, escalabilidade e boas práticas de desenvolvimento.
+
+🌐 GitHub: https://github.com/DanielBarbieri21  
+💼 LinkedIn: https://www.linkedin.com/in/daniel-barbieri-4990462a/
+
+---
+
 
 

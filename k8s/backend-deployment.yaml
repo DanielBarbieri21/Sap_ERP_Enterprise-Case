@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: sap-erp
+labels:
+  app: sap-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sap-backend
+  template:
+    metadata:
+      labels:
+        app: sap-backend
+    spec:
+      containers:
+        - name: backend
+          image: REPLACE_WITH_REGISTRY/sap-backend:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: sap-secrets
+                  key: jwtSecret
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/saperp
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: sap-secrets
+                  key: dbUser
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sap-secrets
+                  key: dbPass
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: sap-erp
+spec:
+  selector:
+    app: sap-backend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

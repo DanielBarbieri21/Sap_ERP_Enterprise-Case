@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: sap-erp
+labels:
+  app: sap-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sap-frontend
+  template:
+    metadata:
+      labels:
+        app: sap-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: REPLACE_WITH_REGISTRY/sap-frontend:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: BACKEND_URL
+              value: http://backend:8080/api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: sap-erp
+spec:
+  selector:
+    app: sap-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

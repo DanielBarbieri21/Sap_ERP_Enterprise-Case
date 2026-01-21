@@ -56,9 +56,5 @@ public class DevDataInitializer {
                     .email(adminEmail)
                     .password("admin123")
                     .company(company)
-                    .build();
-
-            userService.create(admin, companyId);
-        }
-    }
+                    .ice.create(admin, companyId);
 }

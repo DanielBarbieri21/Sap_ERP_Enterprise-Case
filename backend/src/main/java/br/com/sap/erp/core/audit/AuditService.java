@@ -20,6 +20,7 @@ public class AuditService {
 
     private final AuditLogRepository auditLogRepository;
     private final ObjectMapper objectMapper;
+    private final br.com.sap.erp.core.messaging.AuditEventPublisher auditEventPublisher;
 
     @Transactional
     public void logAction(String action, String entityType, UUID entityId, 
@@ -54,6 +55,8 @@ public class AuditService {
             }
             
             auditLogRepository.save(log);
+            // Publica evento de auditoria (assíncrono)
+            auditEventPublisher.publish(log);
         } catch (Exception e) {
             // Log error but don't break the main flow
             System.err.println("Erro ao registrar auditoria: " + e.getMessage());

@@ -1,5 +1,8 @@
 package br.com.sap.erp.modules.integration.service;
 
+import br.com.sap.erp.modules.integration.client.BoletoClient;
+import br.com.sap.erp.modules.integration.client.NfeClient;
+import br.com.sap.erp.modules.integration.client.PixClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,29 +12,19 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class IntegrationService {
 
-    // Estrutura para integrações futuras
+    private final PixClient pixClient;
+    private final BoletoClient boletoClient;
+    private final NfeClient nfeClient;
     
     public Map<String, Object> generatePixPayment(String amount, String description) {
-        // TODO: Implementar integração com PIX
-        return Map.of(
-            "status", "pending",
-            "message", "Integração PIX em desenvolvimento"
-        );
+        return pixClient.createCharge(amount, description);
     }
 
     public Map<String, Object> generateBoleto(String amount, String dueDate, String description) {
-        // TODO: Implementar integração com geração de boleto
-        return Map.of(
-            "status", "pending",
-            "message", "Integração Boleto em desenvolvimento"
-        );
+        return boletoClient.createBoleto(amount, dueDate, description);
     }
 
     public Map<String, Object> issueNFe(Map<String, Object> invoiceData) {
-        // TODO: Implementar integração com emissão de NFe
-        return Map.of(
-            "status", "pending",
-            "message", "Integração NFe em desenvolvimento"
-        );
+        return nfeClient.issueNfe(invoiceData);
     }
 }

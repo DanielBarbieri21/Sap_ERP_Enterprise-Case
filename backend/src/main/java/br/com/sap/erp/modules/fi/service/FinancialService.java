@@ -1,6 +1,7 @@
 package br.com.sap.erp.modules.fi.service;
 
 import br.com.sap.erp.core.domain.TenantContext;
+import br.com.sap.erp.core.audit.Auditable;
 import br.com.sap.erp.modules.fi.domain.entity.ChartOfAccounts;
 import br.com.sap.erp.modules.fi.domain.entity.FinancialTransaction;
 import br.com.sap.erp.modules.fi.repository.ChartOfAccountsRepository;
@@ -22,6 +23,7 @@ public class FinancialService {
     private final ChartOfAccountsRepository chartOfAccountsRepository;
 
     @Transactional
+    @Auditable("CREATE")
     public FinancialTransaction createTransaction(FinancialTransaction transaction) {
         UUID tenantId = TenantContext.getCurrentTenantId();
         if (tenantId != null) {
@@ -60,6 +62,7 @@ public class FinancialService {
     }
 
     @Transactional
+    @Auditable("UPDATE")
     public FinancialTransaction payTransaction(UUID transactionId, BigDecimal amount) {
         FinancialTransaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("Transação não encontrada"));

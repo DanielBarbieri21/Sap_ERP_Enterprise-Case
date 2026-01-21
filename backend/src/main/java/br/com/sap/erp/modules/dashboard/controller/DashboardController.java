@@ -17,7 +17,9 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping("/data")
-    public ResponseEntity<Map<String, Object>> getDashboardData() {
-        return ResponseEntity.ok(dashboardService.getDashboardData());
+    public ResponseEntity<Map<String, Object>> getDashboardData(
+            @RequestParam(required = false) java.time.LocalDate startDate,
+            @RequestParam(required = false) java.time.LocalDate endDate) {
+        return ResponseEntity.ok(dashboardService.getDashboardData(startDate, endDate));
     }
 }

@@ -1,6 +1,7 @@
 package br.com.sap.erp.modules.base.service;
 
 import br.com.sap.erp.core.domain.TenantContext;
+import br.com.sap.erp.core.audit.Auditable;
 import br.com.sap.erp.modules.base.domain.entity.Company;
 import br.com.sap.erp.modules.base.domain.entity.User;
 import br.com.sap.erp.modules.base.repository.CompanyRepository;
@@ -41,6 +42,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    @Auditable("CREATE")
     public User create(User user, UUID companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
@@ -76,6 +78,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    @Auditable("UPDATE")
     public User update(UUID id, User userData) {
         User user = findById(id);
         
@@ -91,6 +94,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    @Auditable("DELETE")
     public void delete(UUID id) {
         User user = findById(id);
         user.softDelete();
@@ -98,6 +102,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    @Auditable("LOGIN")
     public void updateLastLogin(UUID id) {
         User user = findById(id);
         user.setLastLogin(LocalDateTime.now());

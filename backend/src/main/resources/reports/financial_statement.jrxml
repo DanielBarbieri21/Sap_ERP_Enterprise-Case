@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Minimal JasperReports template for Financial Statement -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="financial_statement" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" uuid="6c7efc2c-7b3c-47a5-9d59-1d1b6c2d0abc">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="Empty"/>
+    <parameter name="START_DATE" class="java.time.LocalDate"/>
+    <parameter name="END_DATE" class="java.time.LocalDate"/>
+
+    <title>
+        <band height="60">
+            <staticText>
+                <reportElement x="0" y="0" width="515" height="24" uuid="f9eec0f9-0f3e-4e77-8f2e-0c9a6c1a1b01"/>
+                <textElement textAlignment="Center">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Relatório Financeiro]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="0" y="30" width="515" height="20" uuid="a2b3c4d5-e6f7-48b9-9a0b-c1d2e3f4a5b6"/>
+                <textElement textAlignment="Center">
+                    <font size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Período: " + $P{START_DATE} + " a " + $P{END_DATE}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <detail>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="515" height="20" uuid="0bb2b5e7-3e1d-4e45-9c6e-6d3f2c2a1e90"/>
+                <textElement textAlignment="Center"/>
+                <text><![CDATA[Sem dados detalhados neste modelo (placeholder).]]></text>
+            </staticText>
+        </band>
+    </detail>
+</jasperReport>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Template simples para demonstração -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="financial_statement" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a1111111-2222-3333-4444-555555555555">
+    <parameter name="START_DATE" class="java.time.LocalDate"/>
+    <parameter name="END_DATE" class="java.time.LocalDate"/>
+    <title>
+        <band height="80">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="30" uuid="b1111111-2222-3333-4444-555555555555"/>
+                <textElement textAlignment="Center"/>
+                <text><![CDATA[Relatorio Financeiro]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="0" y="35" width="555" height="20" uuid="c1111111-2222-3333-4444-555555555555"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Periodo: " + $P{START_DATE} + " a " + $P{END_DATE}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+    <detail>
+        <band height="40">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="20" uuid="d1111111-2222-3333-4444-555555555555"/>
+                <text><![CDATA[Conteudo demonstrativo. Preencha com dataset real.]]></text>
+            </staticText>
+        </band>
+    </detail>
+</jasperReport>
