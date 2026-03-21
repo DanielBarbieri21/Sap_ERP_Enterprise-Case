@@ -1,229 +1,178 @@
-# SAP ERP System
+# SAP ERP Enterprise Case
 
-Sistema ERP modular profissional inspirado no SAP, construído com arquitetura moderna e escalável.
+[![Backend CI](https://img.shields.io/badge/backend-Spring%20Boot%203.2-6DB33F?logo=springboot&logoColor=white)](./backend)
+[![Frontend CI](https://img.shields.io/badge/frontend-Angular%2017-DD0031?logo=angular&logoColor=white)](./frontend)
+[![Java](https://img.shields.io/badge/java-21-ED8B00?logo=openjdk&logoColor=white)](./backend/pom.xml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
-## 🏗️ Arquitetura
+Sistema ERP full stack inspirado em cenarios enterprise, construido para demonstrar arquitetura modular, autenticacao JWT, multi-tenancy, integracoes e operacao local com Docker.
+
+![SAP ERP Portfolio Cover](./docs/assets/portfolio-cover.svg)
+
+## Visao Geral
+
+Este repositorio foi reposicionado para apresentar um unico produto principal:
+
+- `backend/`: API enterprise com Spring Boot, Spring Security, JPA, Redis, RabbitMQ e OpenAPI
+- `frontend/`: SPA Angular com autenticacao, dashboard, modulos ERP e navegacao protegida
+- `k8s/`: manifests iniciais para empacotamento e deploy
+- `docs/`: arquitetura, roadmap e backlog tecnico
+
+
+
+## Stack
 
 ### Backend
-- **Java 17** + **Spring Boot 3.2**
-- **PostgreSQL** (banco principal)
-- **Redis** (cache)
-- **JWT** (autenticação)
-- **Multi-tenant** (suporte a múltiplas empresas)
+
+- Java 21
+- Spring Boot 3.2
+- Spring Security + JWT
+- Spring Data JPA
+- Flyway
+- PostgreSQL
+- Redis
+- RabbitMQ
+- OpenAPI / Swagger
 
 ### Frontend
-- **Angular 17** (standalone components)
-- **TypeScript**
-- **Material Design**
 
-### Infraestrutura
-- **Docker** + **Docker Compose**
-- **Maven** (build)
+- Angular 17 com standalone components
+- TypeScript
+- SCSS
+- HttpClient com interceptor de autenticacao
 
-## 📦 Módulos Implementados
+### Operacao
 
-### ✅ Módulo Base
-- Usuários
-- Empresas
-- Perfis e Permissões (RBAC)
-- Autenticação JWT
+- Docker Compose
+- Kubernetes manifests
+- GitHub Actions CI
 
-### ✅ Módulo Financeiro (FI)
-- Plano de Contas
-- Transações Financeiras
-- Contas a Pagar/Receber
-- Centro de Custos
-- Fluxo de Caixa
+## Destaques Tecnicos
 
-### 🚧 Em Desenvolvimento
-- Módulo Contábil (CO)
-- Módulo de Compras (MM)
-- Módulo de Vendas (SD)
-- Módulo de Estoque (WM)
-- Módulo de RH (HCM)
+- Arquitetura modular por dominio (`base`, `fi`, `co`, `mm`, `sd`, `wm`, `hcm`)
+- Multi-tenant com contexto de tenant por usuario autenticado
+- Autenticacao stateless com JWT
+- Auditoria por AOP com anotacao `@Auditable`
+- Observabilidade inicial com Actuator e endpoint Prometheus
+- Cache Redis e mensageria RabbitMQ preparados para evolucao
+- Documentacao OpenAPI gerada automaticamente
+- Fundacao de migrations versionadas com Flyway
+- Schema inicial de `base` e `fi` versionado via Flyway
+- Contratos mais consistentes com DTOs e mapeamento dedicado no backend
+- Shell Angular enterprise com navegacao lateral reutilizavel
 
-## 🚀 Como Executar
+## Executar em 5 Minutos
 
-### Pré-requisitos
-- Java 17+
-- Node.js 18+
-- Docker e Docker Compose
-- Maven 3.9+
+### 1. Configurar variaveis
 
-### Opção 1: Docker Compose (Recomendado)
+Copie `.env.example` para `.env` e ajuste os valores necessarios.
+
+### 2. Subir dependencias
 
 ```bash
-# Subir todos os serviços
-docker-compose up -d
-
-# Ver logs
-docker-compose logs -f
-
-# Parar serviços
-docker-compose down
+docker-compose up -d postgres redis rabbitmq
 ```
 
-### Opção 2: Execução Local
+### 3. Rodar backend
 
-#### Backend
 ```bash
 cd backend
-mvn clean install
 mvn spring-boot:run
 ```
 
-#### Frontend
+### 4. Rodar frontend
+
 ```bash
 cd frontend
 npm install
 npm start
 ```
 
-#### Banco de Dados
-```bash
-docker-compose up postgres redis -d
-```
+### 5. Acessar
 
-## 🔐 Configuração
-
-### Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-DB_USERNAME=postgres
-DB_PASSWORD=postgres
-JWT_SECRET=your-256-bit-secret-key-change-in-production-minimum-32-characters
-REDIS_HOST=localhost
-REDIS_PORT=6379
-```
-
-### Primeiro Acesso
-
-1. Acesse `http://localhost:4200`
-2. Faça login (criar usuário inicial via API ou script de inicialização)
-
-## 📚 API Documentation
-
-Após iniciar o backend, acesse:
+- Frontend: `http://localhost:4200`
+- API: `http://localhost:8080/api`
 - Swagger UI: `http://localhost:8080/api/swagger-ui.html`
-- API Docs: `http://localhost:8080/api/api-docs`
+- RabbitMQ: `http://localhost:15672`
 
-## 🧪 Testes
+### Credenciais demo
+
+- Email: `admin@demo.com`
+- Senha: `admin123`
+
+Disponiveis automaticamente no profile `dev`.
+
+## Execucao com Docker Compose
 
 ```bash
-# Backend
+docker-compose up -d
+docker-compose logs -f
+docker-compose down
+```
+
+## Estrutura
+
+```text
+.
+|-- backend/
+|   |-- src/main/java/br/com/sap/erp/
+|   |   |-- core/
+|   |   `-- modules/
+|   `-- src/main/resources/
+|-- frontend/
+|   `-- src/app/
+|-- docs/
+|-- k8s/
+`-- docker-compose.yml
+```
+
+## Qualidade e Portfolio
+
+Este projeto esta sendo evoluido como case enterprise com foco em:
+
+- arquitetura limpa e modular
+- organizacao profissional do repositorio
+- documentacao clara para recrutadores e avaliadores tecnicos
+- pipeline CI
+- seguranca e configuracao por ambiente
+- UX mais forte no dashboard e login
+
+## Roadmap
+
+- Fase 1: limpeza do repositorio e posicionamento de portfolio
+- Fase 2: endurecimento tecnico do backend e do frontend
+- Fase 3: amadurecimento visual, testes e demonstracoes
+
+Detalhamento em [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md), [docs/ROADMAP.md](./docs/ROADMAP.md) e [docs/BACKLOG.md](./docs/BACKLOG.md).
+Guia de demonstracao em [docs/DEMO_GUIDE.md](./docs/DEMO_GUIDE.md).
+
+## Testes
+
+```bash
 cd backend
 mvn test
-
-# Frontend
-cd frontend
-npm test
 ```
-
-## 📁 Estrutura do Projeto
-
-```
-.
-├── backend/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/br/com/sap/erp/
-│   │   │   │   ├── core/           # Core do sistema
-│   │   │   │   ├── modules/
-│   │   │   │   │   ├── base/       # Módulo base
-│   │   │   │   │   ├── fi/         # Módulo Financeiro
-│   │   │   │   │   ├── co/         # Módulo Contábil (futuro)
-│   │   │   │   │   └── ...
-│   │   │   └── resources/
-│   │   └── test/
-│   └── pom.xml
-├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── core/              # Serviços core
-│   │   │   ├── auth/              # Autenticação
-│   │   │   ├── dashboard/         # Dashboard
-│   │   │   └── modules/           # Módulos do ERP
-│   │   └── environments/
-│   └── package.json
-├── docker-compose.yml
-└── README.md
-```
-
-## 🔒 Segurança
-
-- Autenticação JWT
-- Spring Security
-- RBAC (Role-Based Access Control)
-- Multi-tenant isolado
-- Criptografia de senhas (BCrypt)
-- Validação de entrada
-- Soft delete
-
-## 📈 Próximos Passos
-
-1. Implementar módulos restantes (CO, MM, SD, WM, HCM)
-2. Adicionar testes automatizados
-3. Implementar auditoria completa
-4. Integração com APIs externas (PIX, boletos, NFe)
-5. Dashboard com gráficos e KPIs
-6. Relatórios (Jasper Reports)
-7. Mensageria (Kafka/RabbitMQ)
-8. Deploy em Kubernetes
-
-## ☸️ Kubernetes
-
-Manifests iniciais adicionados em [k8s/](k8s/):
-- [k8s/namespace.yaml](k8s/namespace.yaml)
-- [k8s/backend-deployment.yaml](k8s/backend-deployment.yaml)
-- [k8s/frontend-deployment.yaml](k8s/frontend-deployment.yaml)
-- [k8s/postgres-statefulset.yaml](k8s/postgres-statefulset.yaml)
-- [k8s/redis-deployment.yaml](k8s/redis-deployment.yaml)
-- [k8s/rabbitmq-deployment.yaml](k8s/rabbitmq-deployment.yaml)
-- [k8s/secrets.yaml](k8s/secrets.yaml)
-
-Passos rápidos:
 
 ```bash
-kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/secrets.yaml
-kubectl apply -f k8s/postgres-statefulset.yaml
-kubectl apply -f k8s/redis-deployment.yaml
-kubectl apply -f k8s/rabbitmq-deployment.yaml
-kubectl apply -f k8s/backend-deployment.yaml
-kubectl apply -f k8s/frontend-deployment.yaml
+cd frontend
+npm install
+npm run build
 ```
 
-Atenção: atualize a imagem do backend/frontend nos manifests (`REPLACE_WITH_REGISTRY/...`).
+## GitHub e Apresentacao
 
-## 🔎 Auditoria
+Para um repositorio de portfolio forte, a recomendacao e manter:
 
-Aspecto de auditoria criado em [backend/src/main/java/br/com/sap/erp/core/audit/AuditAspect.java](backend/src/main/java/br/com/sap/erp/core/audit/AuditAspect.java).
+- branch principal limpa
+- README atualizado com stack e evidencias
+- screenshots e GIFs em `docs/`
+- PRs pequenas e descritivas
+- CI verde antes de publicar como case principal
 
-Anote métodos com `@Auditable("ACTION")` para registrar auditoria automaticamente.
+## Autor
 
-## 🧪 Testes
+Daniel Barbieri  
+Software Engineer | Full Stack Developer
 
-Teste unitário do JWT em [backend/src/test/java/br/com/sap/erp/core/service/JwtServiceTest.java](backend/src/test/java/br/com/sap/erp/core/service/JwtServiceTest.java).
-
-
-## 🤝 Contribuindo
-
-Este é um projeto educacional/profissional. Sinta-se livre para adaptar conforme suas necessidades.
-
-
-   ---
-
-🛠️ **Software desenvolvido por Daniel Barbieri**  
-Engenheiro de Software | Full Stack Developer  
-
-Código construído com foco em eficiência, organização, escalabilidade e boas práticas de desenvolvimento.
-
-🌐 GitHub: https://github.com/DanielBarbieri21  
-💼 LinkedIn: https://www.linkedin.com/in/daniel-barbieri-4990462a/
-
----
-
-
-
+- GitHub: [DanielBarbieri21](https://github.com/DanielBarbieri21)
+- LinkedIn: [daniel-barbieri-4990462a](https://www.linkedin.com/in/daniel-barbieri-4990462a/)

@@ -1,7 +1,10 @@
 package br.com.sap.erp.modules.sd.controller;
 
-import br.com.sap.erp.modules.sd.domain.entity.Invoice;
-import br.com.sap.erp.modules.sd.domain.entity.SalesOrder;
+import br.com.sap.erp.modules.sd.dto.InvoiceRequest;
+import br.com.sap.erp.modules.sd.dto.InvoiceResponse;
+import br.com.sap.erp.modules.sd.dto.SalesOrderRequest;
+import br.com.sap.erp.modules.sd.dto.SalesOrderResponse;
+import br.com.sap.erp.modules.sd.mapper.SalesMapper;
 import br.com.sap.erp.modules.sd.service.SalesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,25 +23,38 @@ import java.util.List;
 public class SalesController {
 
     private final SalesService salesService;
+    private final SalesMapper salesMapper;
 
     @PostMapping("/orders")
     @PreAuthorize("hasAuthority('SD_CREATE')")
-    public ResponseEntity<SalesOrder> createOrder(@Valid @RequestBody SalesOrder order) {
-        return ResponseEntity.ok(salesService.createOrder(order));
+    public ResponseEntity<SalesOrderResponse> createOrder(@Valid @RequestBody SalesOrderRequest request) {
+        return ResponseEntity.ok(
+                salesMapper.toResponse(
+                        salesService.createOrder(salesMapper.toEntity(request))
+                )
+        );
     }
 
     @PostMapping("/invoices")
     @PreAuthorize("hasAuthority('SD_INVOICE')")
-    public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody Invoice invoice) {
-        return ResponseEntity.ok(salesService.createInvoice(invoice));
+    public ResponseEntity<InvoiceResponse> createInvoice(@Valid @RequestBody InvoiceRequest request) {
+        return ResponseEntity.ok(
+                salesMapper.toResponse(
+                        salesService.createInvoice(salesMapper.toEntity(request))
+                )
+        );
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<List<SalesOrder>> getOrders(
+    public ResponseEntity<List<SalesOrderResponse>> getOrders(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         if (startDate != null && endDate != null) {
-            return ResponseEntity.ok(salesService.getOrdersByDateRange(startDate, endDate));
+            return ResponseEntity.ok(
+                    salesService.getOrdersByDateRange(startDate, endDate).stream()
+                            .map(salesMapper::toResponse)
+                            .toList()
+            );
         }
         return ResponseEntity.ok(List.of());
     }

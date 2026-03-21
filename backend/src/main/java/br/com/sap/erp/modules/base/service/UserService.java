@@ -1,7 +1,9 @@
 package br.com.sap.erp.modules.base.service;
 
-import br.com.sap.erp.core.domain.TenantContext;
 import br.com.sap.erp.core.audit.Auditable;
+import br.com.sap.erp.core.domain.TenantContext;
+import br.com.sap.erp.core.exception.BusinessException;
+import br.com.sap.erp.core.exception.ResourceNotFoundException;
 import br.com.sap.erp.modules.base.domain.entity.Company;
 import br.com.sap.erp.modules.base.domain.entity.User;
 import br.com.sap.erp.modules.base.repository.CompanyRepository;
@@ -38,32 +40,32 @@ public class UserService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findActiveByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + email));
     }
 
     @Transactional
     @Auditable("CREATE")
     public User create(User user, UUID companyId) {
         Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Empresa nao encontrada"));
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new BusinessException("Email ja cadastrado");
         }
 
         user.setCompany(company);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (companyId != null) {
-            user.setTenantId(companyId); // Assumindo que tenantId = companyId
+            user.setTenantId(companyId);
         }
-        
+
         return userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
     public User findById(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario nao encontrado"));
     }
 
     @Transactional(readOnly = true)
@@ -81,15 +83,15 @@ public class UserService implements UserDetailsService {
     @Auditable("UPDATE")
     public User update(UUID id, User userData) {
         User user = findById(id);
-        
+
         user.setName(userData.getName());
         user.setPhone(userData.getPhone());
         user.setAvatarUrl(userData.getAvatarUrl());
-        
+
         if (userData.getPassword() != null && !userData.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userData.getPassword()));
         }
-        
+
         return userRepository.save(user);
     }
 

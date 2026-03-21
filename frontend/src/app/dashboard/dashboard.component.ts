@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../core/services/auth.service';
+import { AuthResponse, AuthService } from '../core/services/auth.service';
 import { environment } from '../../environments/environment';
+import { EnterpriseShellComponent } from '../shared/shell/enterprise-shell.component';
 
 interface DashboardData {
   monthlyRevenue: number;
@@ -21,235 +21,258 @@ interface DashboardData {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, EnterpriseShellComponent],
   template: `
-    <div class="dashboard-container">
-      <header class="dashboard-header">
-        <h1>SAP ERP - Dashboard</h1>
-        <div class="user-info">
-          <span>Bem-vindo, {{ user?.name }}</span>
-          <button (click)="logout()" class="btn-logout">Sair</button>
+    <app-enterprise-shell
+      section="Home"
+      title="Dashboard executivo"
+      subtitle="Visao consolidada do tenant autenticado com foco em performance financeira, operacao de compras, vendas e disponibilidade de estoque."
+    >
+      <section class="hero-card">
+        <div>
+          <p class="hero-label">Tenant ativo</p>
+          <h3>{{ user?.companyName || 'Empresa atual' }}</h3>
+          <p class="hero-copy">
+            Monitoramento centralizado para apoiar demonstracoes de portfolio com narrativa enterprise clara e indicadores orientados ao negocio.
+          </p>
         </div>
-      </header>
-      
-      <main class="dashboard-content">
-        <div class="kpi-grid">
-          <div class="kpi-card revenue">
-            <div class="kpi-icon">💰</div>
-            <div class="kpi-content">
-              <h3>Receita do Mês</h3>
-              <p class="kpi-value">{{ formatCurrency(dashboardData?.monthlyRevenue || 0) }}</p>
-            </div>
-          </div>
-          
-          <div class="kpi-card expense">
-            <div class="kpi-icon">💸</div>
-            <div class="kpi-content">
-              <h3>Despesas do Mês</h3>
-              <p class="kpi-value">{{ formatCurrency(dashboardData?.monthlyExpenses || 0) }}</p>
-            </div>
-          </div>
-          
-          <div class="kpi-card profit">
-            <div class="kpi-icon">📊</div>
-            <div class="kpi-content">
-              <h3>Lucro do Mês</h3>
-              <p class="kpi-value">{{ formatCurrency(dashboardData?.monthlyProfit || 0) }}</p>
-            </div>
-          </div>
-          
-          <div class="kpi-card sales">
-            <div class="kpi-icon">🛒</div>
-            <div class="kpi-content">
-              <h3>Pedidos de Venda</h3>
-              <p class="kpi-value">{{ dashboardData?.salesOrdersCount || 0 }}</p>
-            </div>
-          </div>
-          
-          <div class="kpi-card purchase">
-            <div class="kpi-icon">📦</div>
-            <div class="kpi-content">
-              <h3>Pedidos de Compra</h3>
-              <p class="kpi-value">{{ dashboardData?.purchaseOrdersCount || 0 }}</p>
-            </div>
-          </div>
-          
-          <div class="kpi-card stock">
-            <div class="kpi-icon">⚠️</div>
-            <div class="kpi-content">
-              <h3>Estoque Baixo</h3>
-              <p class="kpi-value">{{ dashboardData?.lowStockProducts || 0 }}</p>
-            </div>
+        <div class="hero-badge">
+          <span>Stack principal</span>
+          <strong>Spring Boot 3.2 + Angular 17</strong>
+        </div>
+      </section>
+
+      <div *ngIf="loading" class="state-card">Carregando indicadores do dashboard...</div>
+      <div *ngIf="!loading && !dashboardData" class="state-card error-state">
+        Nao foi possivel carregar os indicadores agora. Tente novamente em instantes.
+      </div>
+
+      <div class="kpi-grid" *ngIf="dashboardData">
+        <div class="kpi-card revenue">
+          <div class="kpi-icon">R$</div>
+          <div class="kpi-content">
+            <h3>Receita do Mes</h3>
+            <p class="kpi-value">{{ formatCurrency(dashboardData.monthlyRevenue) }}</p>
           </div>
         </div>
-        
-        <div class="modules-grid">
-          <div class="module-card" (click)="navigateTo('/fi')">
-            <h3>💰 Financeiro (FI)</h3>
-            <p>Contas a pagar/receber, fluxo de caixa</p>
-          </div>
-          
-          <div class="module-card" (click)="navigateTo('/co')">
-            <h3>📋 Contábil (CO)</h3>
-            <p>Lançamentos, balancete, DRE, balanço</p>
-          </div>
-          
-          <div class="module-card" (click)="navigateTo('/mm')">
-            <h3>🛒 Compras (MM)</h3>
-            <p>Requisições, cotações, pedidos</p>
-          </div>
-          
-          <div class="module-card" (click)="navigateTo('/sd')">
-            <h3>💼 Vendas (SD)</h3>
-            <p>Orçamentos, pedidos, notas fiscais</p>
-          </div>
-          
-          <div class="module-card" (click)="navigateTo('/wm')">
-            <h3>📦 Estoque (WM)</h3>
-            <p>Produtos, movimentações, inventário</p>
-          </div>
-          
-          <div class="module-card" (click)="navigateTo('/hcm')">
-            <h3>👥 RH (HCM)</h3>
-            <p>Funcionários, folha, ponto</p>
+
+        <div class="kpi-card expense">
+          <div class="kpi-icon">-</div>
+          <div class="kpi-content">
+            <h3>Despesas do Mes</h3>
+            <p class="kpi-value">{{ formatCurrency(dashboardData.monthlyExpenses) }}</p>
           </div>
         </div>
-      </main>
-    </div>
+
+        <div class="kpi-card profit">
+          <div class="kpi-icon">%</div>
+          <div class="kpi-content">
+            <h3>Lucro do Mes</h3>
+            <p class="kpi-value">{{ formatCurrency(dashboardData.monthlyProfit) }}</p>
+          </div>
+        </div>
+
+        <div class="kpi-card sales">
+          <div class="kpi-icon">SD</div>
+          <div class="kpi-content">
+            <h3>Pedidos de Venda</h3>
+            <p class="kpi-value">{{ dashboardData.salesOrdersCount }}</p>
+          </div>
+        </div>
+
+        <div class="kpi-card purchase">
+          <div class="kpi-icon">MM</div>
+          <div class="kpi-content">
+            <h3>Pedidos de Compra</h3>
+            <p class="kpi-value">{{ dashboardData.purchaseOrdersCount }}</p>
+          </div>
+        </div>
+
+        <div class="kpi-card stock">
+          <div class="kpi-icon">WM</div>
+          <div class="kpi-content">
+            <h3>Estoque Baixo</h3>
+            <p class="kpi-value">{{ dashboardData.lowStockProducts }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modules-grid">
+        <div class="module-card">
+          <h3>Arquitetura modular</h3>
+          <p>Modulos separados por contexto de negocio para facilitar evolucao e demonstracao tecnica.</p>
+        </div>
+        <div class="module-card">
+          <h3>Seguranca e multi-tenancy</h3>
+          <p>JWT, contexto de tenant e contratos mais previsiveis para uso em ambientes reais.</p>
+        </div>
+        <div class="module-card">
+          <h3>Preparado para evoluir</h3>
+          <p>Flyway, CI, documentacao e base visual unificada para portfolio e GitHub.</p>
+        </div>
+      </div>
+    </app-enterprise-shell>
   `,
   styles: [`
-    .dashboard-container {
-      min-height: 100vh;
-      background: #f5f5f5;
-    }
-    
-    .dashboard-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 1.5rem 2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    .hero-card {
       display: flex;
       justify-content: space-between;
+      gap: 1.5rem;
       align-items: center;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(17, 24, 39, 0.08);
+      border-radius: 24px;
+      padding: 1.75rem 1.8rem;
+      box-shadow: 0 20px 60px rgba(17, 24, 39, 0.08);
+      margin-bottom: 1.5rem;
     }
-    
-    .dashboard-header h1 {
+
+    .hero-label {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+      color: #9f6c00;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-card h3 {
+      margin: 0 0 0.6rem 0;
+      font-size: 1.6rem;
+      color: #111827;
+    }
+
+    .hero-copy {
       margin: 0;
-      font-size: 1.5rem;
+      color: #4b5563;
+      max-width: 720px;
+      line-height: 1.6;
     }
-    
-    .user-info {
+
+    .hero-badge {
+      min-width: 220px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #111827 0%, #273449 100%);
+      color: #f8fafc;
+      padding: 1.2rem 1.25rem;
       display: flex;
-      align-items: center;
-      gap: 1rem;
+      flex-direction: column;
+      gap: 0.45rem;
     }
-    
-    .btn-logout {
-      padding: 0.5rem 1rem;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
+
+    .hero-badge span {
+      color: rgba(248, 250, 252, 0.68);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.72rem;
     }
-    
-    .btn-logout:hover {
-      background: rgba(255,255,255,0.3);
+
+    .state-card {
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(17, 24, 39, 0.08);
+      border-radius: 18px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.5rem;
+      color: #374151;
+      box-shadow: 0 14px 36px rgba(17, 24, 39, 0.06);
     }
-    
-    .dashboard-content {
-      padding: 2rem;
-      max-width: 1400px;
-      margin: 0 auto;
+
+    .error-state {
+      color: #991b1b;
+      background: rgba(254, 242, 242, 0.92);
     }
-    
+
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1.5rem;
       margin-bottom: 2rem;
     }
-    
-    .kpi-card {
-      background: white;
+
+    .kpi-card,
+    .module-card {
+      background: rgba(255, 255, 255, 0.88);
       padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 20px;
+      box-shadow: 0 20px 48px rgba(17, 24, 39, 0.08);
+      border: 1px solid rgba(17, 24, 39, 0.06);
+    }
+
+    .kpi-card {
       display: flex;
       align-items: center;
       gap: 1rem;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    
-    .kpi-card:hover {
+
+    .kpi-card:hover,
+    .module-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 24px 56px rgba(17, 24, 39, 0.12);
     }
-    
+
     .kpi-icon {
-      font-size: 2.5rem;
+      width: 3.25rem;
+      height: 3.25rem;
+      border-radius: 18px;
+      background: rgba(17, 24, 39, 0.06);
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #111827;
     }
-    
-    .kpi-content h3 {
+
+    .kpi-content h3,
+    .module-card h3 {
       margin: 0 0 0.5rem 0;
-      color: #666;
-      font-size: 0.9rem;
-      font-weight: 500;
+      color: #333;
     }
-    
+
     .kpi-value {
       margin: 0;
       font-size: 1.8rem;
       font-weight: bold;
       color: #333;
     }
-    
+
     .kpi-card.revenue .kpi-value { color: #10b981; }
     .kpi-card.expense .kpi-value { color: #ef4444; }
     .kpi-card.profit .kpi-value { color: #3b82f6; }
-    
+
     .modules-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1.5rem;
     }
-    
-    .module-card {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      border-left: 4px solid #667eea;
-    }
-    
-    .module-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    
-    .module-card h3 {
-      margin: 0 0 0.5rem 0;
-      color: #333;
-    }
-    
+
     .module-card p {
       margin: 0;
       color: #666;
-      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 960px) {
+      .hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-badge {
+        min-width: auto;
+        width: 100%;
+      }
     }
   `]
 })
 export class DashboardComponent implements OnInit {
-  user: any = null;
+  user: AuthResponse | null = null;
   dashboardData: DashboardData | null = null;
   loading = false;
 
   constructor(
     private authService: AuthService,
-    private router: Router,
     private http: HttpClient
   ) {}
 
@@ -265,8 +288,8 @@ export class DashboardComponent implements OnInit {
         this.dashboardData = data;
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Erro ao carregar dashboard:', err);
+      error: () => {
+        this.dashboardData = null;
         this.loading = false;
       }
     });
@@ -277,14 +300,5 @@ export class DashboardComponent implements OnInit {
       style: 'currency',
       currency: 'BRL'
     }).format(value);
-  }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
-  navigateTo(path: string) {
-    this.router.navigate([path]);
   }
 }

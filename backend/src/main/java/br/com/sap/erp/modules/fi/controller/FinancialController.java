@@ -1,6 +1,10 @@
 package br.com.sap.erp.modules.fi.controller;
 
-import br.com.sap.erp.modules.fi.domain.entity.FinancialTransaction;
+import br.com.sap.erp.modules.fi.dto.FinancialSummaryResponse;
+import br.com.sap.erp.modules.fi.dto.FinancialTransactionRequest;
+import br.com.sap.erp.modules.fi.dto.FinancialTransactionResponse;
+import br.com.sap.erp.modules.fi.dto.PaymentRequest;
+import br.com.sap.erp.modules.fi.mapper.FinancialTransactionMapper;
 import br.com.sap.erp.modules.fi.service.FinancialService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,10 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -22,45 +24,63 @@ import java.util.UUID;
 public class FinancialController {
 
     private final FinancialService financialService;
+    private final FinancialTransactionMapper financialTransactionMapper;
 
     @PostMapping
     @PreAuthorize("hasAuthority('FI_CREATE')")
-    public ResponseEntity<FinancialTransaction> create(@Valid @RequestBody FinancialTransaction transaction) {
-        return ResponseEntity.ok(financialService.createTransaction(transaction));
+    public ResponseEntity<FinancialTransactionResponse> create(@Valid @RequestBody FinancialTransactionRequest request) {
+        return ResponseEntity.ok(
+                financialTransactionMapper.toResponse(
+                        financialService.createTransaction(financialTransactionMapper.toEntity(request))
+                )
+        );
     }
 
     @GetMapping("/date-range")
-    public ResponseEntity<List<FinancialTransaction>> getByDateRange(
+    public ResponseEntity<List<FinancialTransactionResponse>> getByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return ResponseEntity.ok(financialService.getTransactionsByDateRange(startDate, endDate));
+        return ResponseEntity.ok(
+                financialService.getTransactionsByDateRange(startDate, endDate).stream()
+                        .map(financialTransactionMapper::toResponse)
+                        .toList()
+        );
     }
 
     @GetMapping("/pending")
-    public ResponseEntity<List<FinancialTransaction>> getPending() {
-        return ResponseEntity.ok(financialService.getPendingTransactions());
+    public ResponseEntity<List<FinancialTransactionResponse>> getPending() {
+        return ResponseEntity.ok(
+                financialService.getPendingTransactions().stream()
+                        .map(financialTransactionMapper::toResponse)
+                        .toList()
+        );
     }
 
     @PostMapping("/{id}/pay")
     @PreAuthorize("hasAuthority('FI_PAY')")
-    public ResponseEntity<FinancialTransaction> pay(
+    public ResponseEntity<FinancialTransactionResponse> pay(
             @PathVariable UUID id,
-            @RequestBody Map<String, BigDecimal> request) {
-        BigDecimal amount = request.get("amount");
-        return ResponseEntity.ok(financialService.payTransaction(id, amount));
+            @Valid @RequestBody PaymentRequest request) {
+        return ResponseEntity.ok(
+                financialTransactionMapper.toResponse(financialService.payTransaction(id, request.amount()))
+        );
     }
 
     @GetMapping("/summary")
-    public ResponseEntity<Map<String, BigDecimal>> getSummary(
+    public ResponseEntity<FinancialSummaryResponse> getSummary(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         LocalDate start = startDate != null ? startDate : LocalDate.now().withDayOfMonth(1);
         LocalDate end = endDate != null ? endDate : LocalDate.now();
-        
-        return ResponseEntity.ok(Map.of(
-            "revenue", financialService.getTotalRevenue(start, end),
-            "expenses", financialService.getTotalExpenses(start, end),
-            "cashFlow", financialService.getCashFlow(start, end)
-        ));
+
+        return ResponseEntity.ok(
+                new FinancialSummaryResponse(
+                        start,
+                        end,
+                        financialService.getTotalRevenue(start, end),
+                        financialService.getTotalExpenses(start, end),
+                        financialService.getCashFlow(start, end)
+                )
+        );
     }
 }

@@ -1,57 +1,53 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
+import { EnterpriseShellComponent } from '../../shared/shell/enterprise-shell.component';
 
 @Component({
   selector: 'app-hcm',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule, EnterpriseShellComponent],
   template: `
-    <div class="module-page">
-      <h2>RH (HCM)</h2>
-      <a routerLink="/dashboard">Voltar ao Dashboard</a>
-
+    <app-enterprise-shell
+      section="HCM"
+      title="Recursos humanos"
+      subtitle="Operacoes de cadastro, folha e ponto para demonstracao do modulo de pessoas."
+    >
       <section class="card">
-        <h3>Novo Funcionário</h3>
-        <textarea [(ngModel)]="employeeJson" rows="4" style="width:100%" placeholder='{"name":"Fulano","email":"fulano@empresa.com","role":"Analista"}'></textarea>
-        <button (click)="createEmployee()">Criar</button>
+        <h3>Novo funcionario</h3>
+        <textarea [(ngModel)]="employeeJson" rows="5"></textarea>
+        <div class="toolbar">
+          <button (click)="createEmployee()">Criar funcionario</button>
+        </div>
         <pre>{{ createdEmployee | json }}</pre>
       </section>
 
       <section class="card">
-        <h3>Folha de Pagamento</h3>
-        <textarea [(ngModel)]="payrollJson" rows="4" style="width:100%" placeholder='{"employeeId":"...","date":"2026-01-21","amount":5000}'></textarea>
-        <button (click)="createPayroll()">Gerar</button>
+        <h3>Folha de pagamento</h3>
+        <textarea [(ngModel)]="payrollJson" rows="5"></textarea>
+        <div class="toolbar">
+          <button (click)="createPayroll()">Gerar folha</button>
+        </div>
         <pre>{{ createdPayroll | json }}</pre>
       </section>
 
       <section class="card">
-        <h3>Registro de Ponto</h3>
-        <textarea [(ngModel)]="timeJson" rows="4" style="width:100%" placeholder='{"employeeId":"...","date":"2026-01-21","type":"IN","time":"08:00"}'></textarea>
-        <button (click)="createTimeRecord()">Registrar</button>
+        <h3>Registro de ponto</h3>
+        <textarea [(ngModel)]="timeJson" rows="5"></textarea>
+        <div class="toolbar">
+          <button (click)="createTimeRecord()">Registrar ponto</button>
+        </div>
         <pre>{{ createdTime | json }}</pre>
       </section>
-
-      <section class="card">
-        <h3>Ponto por Funcionário</h3>
-        <div class="row">
-          <label>Emp ID: <input [(ngModel)]="empId"></label>
-          <label>Início: <input type="date" [(ngModel)]="startDate"></label>
-          <label>Fim: <input type="date" [(ngModel)]="endDate"></label>
-          <button (click)="loadTimeRecords()">Carregar</button>
-        </div>
-        <pre>{{ timeRecords | json }}</pre>
-      </section>
-    </div>
+    </app-enterprise-shell>
   `,
   styles: [`
-    .module-page { padding: 2rem; }
-    h2 { margin-bottom: .5rem; }
-    .card { background:#fff; padding:1rem; margin:1rem 0; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.1); }
-    .row { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; }
+    .card { background: rgba(255,255,255,0.9); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 20px; box-shadow: 0 18px 42px rgba(17,24,39,0.08); border: 1px solid rgba(17,24,39,0.06); }
+    .toolbar { display:flex; gap:1rem; flex-wrap:wrap; align-items:end; margin-top:1rem; }
+    textarea, button { border-radius:12px; border:1px solid rgba(17,24,39,0.12); padding:.8rem .9rem; background:white; width:100%; }
+    button { width:auto; background:#111827; color:white; cursor:pointer; }
   `]
 })
 export class HcmComponent {
@@ -59,34 +55,24 @@ export class HcmComponent {
   employeeJson = '';
   payrollJson = '';
   timeJson = '';
-  empId = '';
-  startDate = '';
-  endDate = '';
   createdEmployee: any = null;
   createdPayroll: any = null;
   createdTime: any = null;
-  timeRecords: any = null;
 
   constructor(private http: HttpClient) {}
 
   createEmployee() {
-    let payload: any; try { payload = JSON.parse(this.employeeJson); } catch { alert('JSON inválido'); return; }
-    this.http.post(`${this.api}/hcm/employees`, payload).subscribe(res => this.createdEmployee = res);
+    let payload: any; try { payload = JSON.parse(this.employeeJson); } catch { alert('JSON invalido'); return; }
+    this.http.post(`${this.api}/hcm/employees`, payload).subscribe((res) => this.createdEmployee = res);
   }
 
   createPayroll() {
-    let payload: any; try { payload = JSON.parse(this.payrollJson); } catch { alert('JSON inválido'); return; }
-    this.http.post(`${this.api}/hcm/payrolls`, payload).subscribe(res => this.createdPayroll = res);
+    let payload: any; try { payload = JSON.parse(this.payrollJson); } catch { alert('JSON invalido'); return; }
+    this.http.post(`${this.api}/hcm/payrolls`, payload).subscribe((res) => this.createdPayroll = res);
   }
 
   createTimeRecord() {
-    let payload: any; try { payload = JSON.parse(this.timeJson); } catch { alert('JSON inválido'); return; }
-    this.http.post(`${this.api}/hcm/time-records`, payload).subscribe(res => this.createdTime = res);
-  }
-
-  loadTimeRecords() {
-    if (!this.empId || !this.startDate || !this.endDate) return;
-    this.http.get(`${this.api}/hcm/employees/${this.empId}/time-records`, { params: { startDate: this.startDate, endDate: this.endDate } })
-      .subscribe(res => this.timeRecords = res);
+    let payload: any; try { payload = JSON.parse(this.timeJson); } catch { alert('JSON invalido'); return; }
+    this.http.post(`${this.api}/hcm/time-records`, payload).subscribe((res) => this.createdTime = res);
   }
 }

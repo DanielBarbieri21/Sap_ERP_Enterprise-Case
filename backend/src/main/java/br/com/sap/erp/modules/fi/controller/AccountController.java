@@ -1,6 +1,7 @@
 package br.com.sap.erp.modules.fi.controller;
 
-import br.com.sap.erp.modules.fi.domain.entity.ChartOfAccounts;
+import br.com.sap.erp.modules.fi.dto.ChartOfAccountsResponse;
+import br.com.sap.erp.modules.fi.mapper.FinancialTransactionMapper;
 import br.com.sap.erp.modules.fi.service.FinancialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,14 @@ import java.util.List;
 public class AccountController {
 
     private final FinancialService financialService;
+    private final FinancialTransactionMapper financialTransactionMapper;
 
     @GetMapping
-    public ResponseEntity<List<ChartOfAccounts>> listActive() {
-        return ResponseEntity.ok(financialService.getActiveAccounts());
+    public ResponseEntity<List<ChartOfAccountsResponse>> listActive() {
+        return ResponseEntity.ok(
+                financialService.getActiveAccounts().stream()
+                        .map(financialTransactionMapper::toResponse)
+                        .toList()
+        );
     }
 }

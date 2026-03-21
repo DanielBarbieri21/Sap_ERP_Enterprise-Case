@@ -1,27 +1,72 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './auth/login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { authGuard } from './core/guards/auth.guard';
-import { FiComponent } from './modules/fi/fi.component';
-import { CoComponent } from './modules/co/co.component';
-import { MmComponent } from './modules/mm/mm.component';
-import { SdComponent } from './modules/sd/sd.component';
-import { WmComponent } from './modules/wm/wm.component';
-import { HcmComponent } from './modules/hcm/hcm.component';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { 
-    path: 'dashboard', 
-    component: DashboardComponent,
+  {
+    path: 'login',
+    title: 'Entrar | SAP ERP Enterprise',
+    loadComponent: () => import('./auth/login/login.component').then((m) => m.LoginComponent)
+  },
+  {
+    path: 'dashboard',
+    title: 'Dashboard | SAP ERP Enterprise',
+    loadComponent: () => import('./dashboard/dashboard.component').then((m) => m.DashboardComponent),
     canActivate: [authGuard]
   },
-  { path: 'fi', component: FiComponent, canActivate: [authGuard] },
-  { path: 'co', component: CoComponent, canActivate: [authGuard] },
-  { path: 'mm', component: MmComponent, canActivate: [authGuard] },
-  { path: 'sd', component: SdComponent, canActivate: [authGuard] },
-  { path: 'wm', component: WmComponent, canActivate: [authGuard] },
-  { path: 'hcm', component: HcmComponent, canActivate: [authGuard] },
+  {
+    path: 'fi',
+    title: 'Financeiro | SAP ERP Enterprise',
+    loadComponent: () => import('./modules/fi/fi.component').then((m) => m.FiComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'co',
+    title: 'Contabil | SAP ERP Enterprise',
+    loadComponent: () => import('./modules/co/co.component').then((m) => m.CoComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'mm',
+    title: 'Compras | SAP ERP Enterprise',
+    loadComponent: () => import('./modules/mm/mm.component').then((m) => m.MmComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'sd',
+    title: 'Vendas | SAP ERP Enterprise',
+    loadComponent: () => import('./modules/sd/sd.component').then((m) => m.SdComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'wm',
+    title: 'Estoque | SAP ERP Enterprise',
+    loadComponent: () => import('./modules/wm/wm.component').then((m) => m.WmComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'hcm',
+    title: 'RH | SAP ERP Enterprise',
+    loadComponent: () => import('./modules/hcm/hcm.component').then((m) => m.HcmComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'fipe',
+    title: 'FIPE | SAP ERP Enterprise',
+    loadComponent: () => import('./modules/fipe/fipe-page.component').then((m) => m.FipePageComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'mercado-livre',
+    title: 'Mercado Livre | SAP ERP Enterprise',
+    loadComponent: () => import('./modules/mercado-livre/mercado-livre-page.component').then((m) => m.MercadoLivrePageComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'compras',
+    title: 'Compras Integradas | SAP ERP Enterprise',
+    loadComponent: () => import('./modules/compras/compras-page.component').then((m) => m.ComprasPageComponent),
+    canActivate: [authGuard]
+  },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];

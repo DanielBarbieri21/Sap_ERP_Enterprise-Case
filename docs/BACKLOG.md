@@ -1,39 +1,44 @@
-# Backlog Módulos e Integrações
+# Backlog Tecnico
 
-## MM (Compras)
-- Entidades: `Supplier`, `PurchaseRequisition`, `PurchaseOrder`, `GoodsReceipt`
-- Endpoints: criar/listar/autorizar pedidos; registrar recebimento
-- Regras: validação fornecedor, status workflow (draft/approved/received)
+## Plataforma
 
-## SD (Vendas)
-- Entidades: `Customer`, `SalesOrder`, `Invoice`
-- Endpoints: criar/listar pedidos; faturar; emitir nota
-- Regras: estoque disponível, cálculo de impostos
+- Consolidar migrations versionadas para toda a base
+- Adicionar cobertura de testes por camada
+- Padronizar DTOs, mappers e contratos de erro
+- Instrumentar observabilidade com dashboards e tracing
+- Migrar schema principal do JPA auto-ddl para migrations completas do Flyway
+- Adicionar seed demo mais rica para MM, SD, WM e HCM
 
-## WM (Estoque)
-- Entidades: `Product`, `StockMovement`, `Inventory`, `Location`
-- Endpoints: movimentar; inventariar; listar baixo estoque
-- Regras: endereçamento, lotes/validade, bloqueio por inventário
+## Modulo Base
 
-## CO (Contábil)
-- Entidades: `AccountingDocument`, `AccountingEntry`, `CostCenter`
-- Endpoints: criar documento; lançar; relatórios (balancete, DRE, BP)
-- Regras: partidas dobradas, validação contas (FI)
+- CRUD completo de usuarios, empresas, perfis e permissoes
+- Gestao de senha, bloqueio, reset e auditoria de acesso
+- Refinar RBAC com autorizacao por recurso
 
-## HCM (RH)
-- Entidades: `Employee`, `Payroll`, `TimeRecord`
-- Endpoints: cadastro; folha; ponto; histórico
-- Regras: jornadas, cálculos básicos folha
+## Modulo FI
 
-## Integrações
-- PIX: `PixClient` com providers; webhooks
-- Boletos: emissão e consulta; remessa/retorno (CNAB)
-- NFe: emissão, status, XML/assinatura; SEFAZ
+- Fechamento financeiro por periodo
+- Contas a pagar e receber com workflow
+- Centro de custo e consolidacao por tenant
 
-## Dashboard
-- KPIs: receitas/despesas no mês, pedidos (SD/MM), estoque baixo
-- Filtros por período/empresa (tenant)
+## Modulos em Evolucao
 
-## Relatórios (Jasper)
-- Templates: extratos financeiros, pedidos, estoque
-- Serviço: compilar/preencher, exportar PDF/Excel
+- `CO`: documentos contabeis, partidas dobradas, DRE
+- `MM`: requisicoes, pedidos, recebimento e aprovacoes
+- `SD`: pedidos, faturamento e emissao de nota
+- `WM`: estoque, movimentacao, inventario e estoque minimo
+- `HCM`: funcionarios, folha e ponto
+
+## Integracoes
+
+- PIX com webhook e conciliacao
+- Boletos com remessa/retorno
+- NFe com emissao, consulta e armazenamento de XML
+- Marketplaces e catalogos externos
+
+## Frontend
+
+- Layout enterprise com shell reutilizavel
+- KPIs, graficos e filtros por periodo
+- Estados de loading, empty e error em todos os modulos
+- Design system consistente e responsivo

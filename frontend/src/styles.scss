@@ -4,8 +4,48 @@
   box-sizing: border-box;
 }
 
+:root {
+  --color-bg: #f3f4f7;
+  --color-surface: rgba(255, 255, 255, 0.88);
+  --color-surface-strong: #ffffff;
+  --color-text: #111827;
+  --color-muted: #6b7280;
+  --color-border: rgba(17, 24, 39, 0.08);
+  --color-primary: #111827;
+  --color-accent: #c69214;
+  --color-accent-strong: #9f6c00;
+  --color-success: #14805e;
+  --color-danger: #c2410c;
+  --shadow-soft: 0 20px 60px rgba(17, 24, 39, 0.10);
+}
+
+html,
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', 'Inter', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+.surface-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(12px);
 }

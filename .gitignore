@@ -8,6 +8,9 @@ target/
 .mvn/
 mvnw
 mvnw.cmd
+backend/target/
+backend/logs/
+backend/.github/
 
 # Node
 node_modules/
@@ -15,6 +18,9 @@ npm-debug.log
 yarn-error.log
 dist/
 .angular/
+frontend/.angular/
+frontend/dist/
+frontend/.sass-cache/
 
 # IDE
 .idea/
@@ -31,6 +37,7 @@ Thumbs.db
 # Environment
 .env
 .env.local
+.env.*.local
 
 # Logs
 logs/
@@ -40,3 +47,5 @@ logs/
 docker-compose.override.yml
 
 .fake
+Sistema_Compras_Rolaveda/
+.github/java-upgrade/

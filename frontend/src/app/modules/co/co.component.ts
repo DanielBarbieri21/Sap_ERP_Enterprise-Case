@@ -1,23 +1,24 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
+import { EnterpriseShellComponent } from '../../shared/shell/enterprise-shell.component';
 
 @Component({
   selector: 'app-co',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule, EnterpriseShellComponent],
   template: `
-    <div class="module-page">
-      <h2>Contábil (CO)</h2>
-      <a routerLink="/dashboard">Voltar ao Dashboard</a>
-
+    <app-enterprise-shell
+      section="CO"
+      title="Contabil"
+      subtitle="Acompanhamento de demonstrativos, criacao de documentos e apoio a rotinas contabeis."
+    >
       <section class="card">
-        <h3>DRE e Balancete</h3>
-        <div class="row">
-          <label>Início: <input type="date" [(ngModel)]="startDate"></label>
+        <h3>DRE e balancete</h3>
+        <div class="toolbar">
+          <label>Inicio: <input type="date" [(ngModel)]="startDate"></label>
           <label>Fim: <input type="date" [(ngModel)]="endDate"></label>
           <button (click)="loadTrialBalance()">Balancete</button>
           <button (click)="loadIncomeStatement()">DRE</button>
@@ -29,8 +30,8 @@ import { environment } from '../../../environments/environment';
       </section>
 
       <section class="card">
-        <h3>Balanço</h3>
-        <div class="row">
+        <h3>Balanco patrimonial</h3>
+        <div class="toolbar">
           <label>Data: <input type="date" [(ngModel)]="balanceDate"></label>
           <button (click)="loadBalanceSheet()">Carregar</button>
         </div>
@@ -38,27 +39,22 @@ import { environment } from '../../../environments/environment';
       </section>
 
       <section class="card">
-        <h3>Novo Documento</h3>
-        <textarea [(ngModel)]="documentJson" rows="6" style="width:100%" placeholder='{"date":"2026-01-21","description":"Lançamento","entries":[{"accountId":"...","debit":100},{"accountId":"...","credit":100}]}'></textarea>
-        <button (click)="createDocument()">Criar</button>
+        <h3>Novo documento contabil</h3>
+        <textarea [(ngModel)]="documentJson" rows="6"></textarea>
+        <div class="toolbar">
+          <button (click)="createDocument()">Criar documento</button>
+        </div>
         <pre>{{ created | json }}</pre>
       </section>
-
-      <section class="card">
-        <h3>Postar Documento</h3>
-        <div class="row">
-          <label>Documento ID: <input [(ngModel)]="postId"></label>
-          <button (click)="postDocument()">Postar</button>
-        </div>
-        <pre>{{ posted | json }}</pre>
-      </section>
-    </div>
+    </app-enterprise-shell>
   `,
   styles: [`
-    .module-page { padding: 2rem; }
-    h2 { margin-bottom: .5rem; }
-    .card { background:#fff; padding:1rem; margin:1rem 0; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.1); }
-    .row { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; }
+    .card { background: rgba(255,255,255,0.9); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 20px; box-shadow: 0 18px 42px rgba(17,24,39,0.08); border: 1px solid rgba(17,24,39,0.06); }
+    .toolbar { display:flex; gap:1rem; flex-wrap:wrap; align-items:end; margin-top:1rem; }
+    label { display:flex; flex-direction:column; gap:.45rem; }
+    input, textarea, button { border-radius:12px; border:1px solid rgba(17,24,39,0.12); padding:.8rem .9rem; background:white; width:100%; }
+    button { width:auto; background:#111827; color:white; cursor:pointer; }
+    textarea { min-height: 160px; }
   `]
 })
 export class CoComponent {
@@ -71,40 +67,31 @@ export class CoComponent {
   incomeStatement: any = null;
   documentJson = '';
   created: any = null;
-  postId = '';
-  posted: any = null;
 
   constructor(private http: HttpClient) {}
 
   loadTrialBalance() {
     if (!this.startDate || !this.endDate) return;
     this.http.get(`${this.api}/co/documents/trial-balance`, { params: { startDate: this.startDate, endDate: this.endDate } })
-      .subscribe(res => this.trialBalance = res);
+      .subscribe((res) => this.trialBalance = res);
   }
 
   loadBalanceSheet() {
     if (!this.balanceDate) return;
     this.http.get(`${this.api}/co/documents/balance-sheet`, { params: { date: this.balanceDate } })
-      .subscribe(res => this.balanceSheet = res);
+      .subscribe((res) => this.balanceSheet = res);
   }
 
   loadIncomeStatement() {
     if (!this.startDate || !this.endDate) return;
     this.http.get(`${this.api}/co/documents/income-statement`, { params: { startDate: this.startDate, endDate: this.endDate } })
-      .subscribe(res => this.incomeStatement = res);
+      .subscribe((res) => this.incomeStatement = res);
   }
 
   createDocument() {
     if (!this.documentJson) return;
     let payload: any;
-    try { payload = JSON.parse(this.documentJson); } catch { alert('JSON inválido'); return; }
-    this.http.post(`${this.api}/co/documents`, payload)
-      .subscribe(res => this.created = res);
-  }
-
-  postDocument() {
-    if (!this.postId) return;
-    this.http.post(`${this.api}/co/documents/${this.postId}/post`, {})
-      .subscribe(res => this.posted = res);
+    try { payload = JSON.parse(this.documentJson); } catch { alert('JSON invalido'); return; }
+    this.http.post(`${this.api}/co/documents`, payload).subscribe((res) => this.created = res);
   }
 }

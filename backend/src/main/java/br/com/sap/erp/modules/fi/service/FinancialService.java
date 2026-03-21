@@ -1,7 +1,8 @@
 package br.com.sap.erp.modules.fi.service;
 
-import br.com.sap.erp.core.domain.TenantContext;
 import br.com.sap.erp.core.audit.Auditable;
+import br.com.sap.erp.core.domain.TenantContext;
+import br.com.sap.erp.core.exception.ResourceNotFoundException;
 import br.com.sap.erp.modules.fi.domain.entity.ChartOfAccounts;
 import br.com.sap.erp.modules.fi.domain.entity.FinancialTransaction;
 import br.com.sap.erp.modules.fi.repository.ChartOfAccountsRepository;
@@ -29,17 +30,16 @@ public class FinancialService {
         if (tenantId != null) {
             transaction.setTenantId(tenantId);
         }
-        
-        // Validar conta contábil
+
         ChartOfAccounts account = chartOfAccountsRepository.findById(transaction.getAccount().getId())
-                .orElseThrow(() -> new RuntimeException("Conta contábil não encontrada"));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("Conta contabil nao encontrada"));
+
         transaction.setAccount(account);
-        
+
         if (transaction.getTransactionDate() == null) {
             transaction.setTransactionDate(LocalDate.now());
         }
-        
+
         return transactionRepository.save(transaction);
     }
 
@@ -65,8 +65,8 @@ public class FinancialService {
     @Auditable("UPDATE")
     public FinancialTransaction payTransaction(UUID transactionId, BigDecimal amount) {
         FinancialTransaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transação não encontrada"));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("Transacao nao encontrada"));
+
         transaction.markAsPaid(amount);
         return transactionRepository.save(transaction);
     }
@@ -77,7 +77,12 @@ public class FinancialService {
         if (tenantId == null) {
             return BigDecimal.ZERO;
         }
-        BigDecimal total = transactionRepository.getTotalByType(tenantId, FinancialTransaction.TransactionType.RECEITA, startDate, endDate);
+        BigDecimal total = transactionRepository.getTotalByType(
+                tenantId,
+                FinancialTransaction.TransactionType.RECEITA,
+                startDate,
+                endDate
+        );
         return total != null ? total : BigDecimal.ZERO;
     }
 
@@ -87,7 +92,12 @@ public class FinancialService {
         if (tenantId == null) {
             return BigDecimal.ZERO;
         }
-        BigDecimal total = transactionRepository.getTotalByType(tenantId, FinancialTransaction.TransactionType.DESPESA, startDate, endDate);
+        BigDecimal total = transactionRepository.getTotalByType(
+                tenantId,
+                FinancialTransaction.TransactionType.DESPESA,
+                startDate,
+                endDate
+        );
         return total != null ? total : BigDecimal.ZERO;
     }
 

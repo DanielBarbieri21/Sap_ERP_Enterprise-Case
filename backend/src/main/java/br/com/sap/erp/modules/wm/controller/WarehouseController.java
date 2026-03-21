@@ -1,8 +1,10 @@
 package br.com.sap.erp.modules.wm.controller;
 
-import br.com.sap.erp.modules.wm.domain.entity.Inventory;
-import br.com.sap.erp.modules.wm.domain.entity.Product;
-import br.com.sap.erp.modules.wm.domain.entity.StockMovement;
+import br.com.sap.erp.modules.wm.dto.ProductRequest;
+import br.com.sap.erp.modules.wm.dto.ProductResponse;
+import br.com.sap.erp.modules.wm.dto.StockMovementRequest;
+import br.com.sap.erp.modules.wm.dto.StockMovementResponse;
+import br.com.sap.erp.modules.wm.mapper.WarehouseMapper;
 import br.com.sap.erp.modules.wm.service.WarehouseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,32 +21,43 @@ import java.util.List;
 public class WarehouseController {
 
     private final WarehouseService warehouseService;
+    private final WarehouseMapper warehouseMapper;
 
     @PostMapping("/products")
     @PreAuthorize("hasAuthority('WM_CREATE')")
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
-        return ResponseEntity.ok(warehouseService.createProduct(product));
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request) {
+        return ResponseEntity.ok(
+                warehouseMapper.toResponse(
+                        warehouseService.createProduct(warehouseMapper.toEntity(request))
+                )
+        );
     }
 
     @PostMapping("/movements")
     @PreAuthorize("hasAuthority('WM_MOVE')")
-    public ResponseEntity<StockMovement> createMovement(@Valid @RequestBody StockMovement movement) {
-        return ResponseEntity.ok(warehouseService.createMovement(movement));
-    }
-
-    @PostMapping("/inventories")
-    @PreAuthorize("hasAuthority('WM_INVENTORY')")
-    public ResponseEntity<Inventory> createInventory(@Valid @RequestBody Inventory inventory) {
-        return ResponseEntity.ok(warehouseService.createInventory(inventory));
+    public ResponseEntity<StockMovementResponse> createMovement(@Valid @RequestBody StockMovementRequest request) {
+        return ResponseEntity.ok(
+                warehouseMapper.toResponse(
+                        warehouseService.createMovement(warehouseMapper.toEntity(request))
+                )
+        );
     }
 
     @GetMapping("/products/low-stock")
-    public ResponseEntity<List<Product>> getLowStockProducts() {
-        return ResponseEntity.ok(warehouseService.getLowStockProducts());
+    public ResponseEntity<List<ProductResponse>> getLowStockProducts() {
+        return ResponseEntity.ok(
+                warehouseService.getLowStockProducts().stream()
+                        .map(warehouseMapper::toResponse)
+                        .toList()
+        );
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> listProducts() {
-        return ResponseEntity.ok(warehouseService.getAllActiveProducts());
+    public ResponseEntity<List<ProductResponse>> listProducts() {
+        return ResponseEntity.ok(
+                warehouseService.getAllActiveProducts().stream()
+                        .map(warehouseMapper::toResponse)
+                        .toList()
+        );
     }
 }

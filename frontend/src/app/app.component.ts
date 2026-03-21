@@ -14,10 +14,12 @@ import { CommonModule } from '@angular/common';
   styles: [`
     .app-container {
       min-height: 100vh;
-      background-color: #f5f5f5;
+      background:
+        radial-gradient(circle at top, rgba(214, 160, 34, 0.12), transparent 32%),
+        linear-gradient(180deg, #f6f1e7 0%, #f3f4f7 100%);
     }
   `]
 })
 export class AppComponent {
-  title = 'SAP ERP System';
+  title = 'SAP ERP Enterprise';
 }

@@ -1,8 +1,11 @@
 package br.com.sap.erp.modules.hcm.controller;
 
-import br.com.sap.erp.modules.hcm.domain.entity.Employee;
 import br.com.sap.erp.modules.hcm.domain.entity.Payroll;
-import br.com.sap.erp.modules.hcm.domain.entity.TimeRecord;
+import br.com.sap.erp.modules.hcm.dto.EmployeeRequest;
+import br.com.sap.erp.modules.hcm.dto.EmployeeResponse;
+import br.com.sap.erp.modules.hcm.dto.TimeRecordRequest;
+import br.com.sap.erp.modules.hcm.dto.TimeRecordResponse;
+import br.com.sap.erp.modules.hcm.mapper.HumanResourcesMapper;
 import br.com.sap.erp.modules.hcm.service.HumanResourcesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +25,16 @@ import java.util.UUID;
 public class HumanResourcesController {
 
     private final HumanResourcesService hrService;
+    private final HumanResourcesMapper humanResourcesMapper;
 
     @PostMapping("/employees")
     @PreAuthorize("hasAuthority('HCM_CREATE')")
-    public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) {
-        return ResponseEntity.ok(hrService.createEmployee(employee));
+    public ResponseEntity<EmployeeResponse> createEmployee(@Valid @RequestBody EmployeeRequest request) {
+        return ResponseEntity.ok(
+                humanResourcesMapper.toResponse(
+                        hrService.createEmployee(humanResourcesMapper.toEntity(request))
+                )
+        );
     }
 
     @PostMapping("/payrolls")
@@ -37,15 +45,23 @@ public class HumanResourcesController {
 
     @PostMapping("/time-records")
     @PreAuthorize("hasAuthority('HCM_TIME')")
-    public ResponseEntity<TimeRecord> createTimeRecord(@Valid @RequestBody TimeRecord timeRecord) {
-        return ResponseEntity.ok(hrService.createTimeRecord(timeRecord));
+    public ResponseEntity<TimeRecordResponse> createTimeRecord(@Valid @RequestBody TimeRecordRequest request) {
+        return ResponseEntity.ok(
+                humanResourcesMapper.toResponse(
+                        hrService.createTimeRecord(humanResourcesMapper.toEntity(request))
+                )
+        );
     }
 
     @GetMapping("/employees/{id}/time-records")
-    public ResponseEntity<List<TimeRecord>> getTimeRecords(
+    public ResponseEntity<List<TimeRecordResponse>> getTimeRecords(
             @PathVariable UUID id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return ResponseEntity.ok(hrService.getTimeRecordsByEmployee(id, startDate, endDate));
+        return ResponseEntity.ok(
+                hrService.getTimeRecordsByEmployee(id, startDate, endDate).stream()
+                        .map(humanResourcesMapper::toResponse)
+                        .toList()
+        );
     }
 }

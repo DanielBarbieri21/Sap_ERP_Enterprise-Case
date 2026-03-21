@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    br.com.sap: DEBUG
+    org.springframework.security: INFO
