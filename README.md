@@ -159,16 +159,6 @@ npm install
 npm run build
 ```
 
-## GitHub e Apresentacao
-
-Para um repositorio de portfolio forte, a recomendacao e manter:
-
-- branch principal limpa
-- README atualizado com stack e evidencias
-- screenshots e GIFs em `docs/`
-- PRs pequenas e descritivas
-- CI verde antes de publicar como case principal
-
 ## Autor
 
 Daniel Barbieri  
